@@ -8,10 +8,10 @@ const SqlQueryBox = () => {
   const runQuery = async () => {
     try {
       const res = await db.exec(query);
-      setResult(res.rows ?? []);
+      setResult(res[0]?.rows ?? []);
     } catch (err) {
       alert("Invalid SQL");
-      setResult([]); // Reset result on failure
+      setResult([]);
     }
   };
 
@@ -46,7 +46,11 @@ const SqlQueryBox = () => {
                 {result.map((row, i) => (
                   <tr key={i}>
                     {Object.values(row).map((val, j) => (
-                      <td key={j}>{val}</td>
+                      <td key={j}>
+                        {val instanceof Date
+                          ? val.toLocaleString()
+                          : String(val)}
+                      </td>
                     ))}
                   </tr>
                 ))}
