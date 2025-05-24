@@ -8,9 +8,10 @@ const SqlQueryBox = () => {
   const runQuery = async () => {
     try {
       const res = await db.exec(query);
-      setResult(res.rows);
+      setResult(res.rows ?? []);
     } catch (err) {
       alert("Invalid SQL");
+      setResult([]); // reset result on failure
     }
   };
 
@@ -25,7 +26,7 @@ const SqlQueryBox = () => {
       <button onClick={runQuery} className="btn btn-success mb-3">
         Execute
       </button>
-      {result.length > 0 && (
+      {Array.isArray(result) && result.length > 0 && (
         <table className="table table-bordered">
           <thead>
             <tr>

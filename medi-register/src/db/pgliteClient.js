@@ -7,13 +7,14 @@ const db = new PGlite({
 
 export const initializeDB = async () => {
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS patients (
-      id SERIAL PRIMARY KEY,
-      name TEXT,
-      age INTEGER,
-      gender TEXT
-    );
-  `);
+  CREATE TABLE IF NOT EXISTS patients (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    age INTEGER,
+    gender TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 };
 
 export default db;

@@ -13,19 +13,24 @@ const PatientForm = ({ onRegister }) => {
     const { name, age, gender } = form;
     if (!name || !age || !gender) return alert("Fill all fields");
 
-    // Escape single quotes to avoid breaking the SQL
     const safeName = name.replace(/'/g, "''");
     const safeGender = gender.replace(/'/g, "''");
 
-    await db.exec(`
+    const result = await db.exec(`
     INSERT INTO patients (name, age, gender)
     VALUES ('${safeName}', ${parseInt(age)}, '${safeGender}');
   `);
 
+    if (result[0]?.affectedRows === 0) {
+      alert("Insert failed");
+      return;
+    }
+
     setForm({ name: "", age: "", gender: "" });
     onRegister();
     broadcastUpdate();
-    alert("User added successfully")
+
+    alert("User added successfully");
   };
 
   return (
