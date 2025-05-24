@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import db from "../db/pgliteClient";
 import { broadcastUpdate } from "../utils/broadcast";
+import { refreshDB } from "../db/pgliteClient";
 
 const PatientForm = ({ onRegister }) => {
   const [form, setForm] = useState({ name: "", age: "", gender: "" });
@@ -16,21 +17,17 @@ const PatientForm = ({ onRegister }) => {
     const safeName = name.replace(/'/g, "''");
     const safeGender = gender.replace(/'/g, "''");
 
-    const result = await db.exec(`
-    INSERT INTO patients (name, age, gender)
-    VALUES ('${safeName}', ${parseInt(age)}, '${safeGender}');
-  `);
+    // 🔁 Ensure latest state is loaded before writing
+    await refreshDB(); // read to sync with disk
 
-    if (result[0]?.affectedRows === 0) {
-      alert("Insert failed");
-      return;
-    }
+    await db.exec(`
+      INSERT INTO patients (name, age, gender)
+      VALUES ('${safeName}', ${parseInt(age)}, '${safeGender}');
+    `);
 
     setForm({ name: "", age: "", gender: "" });
-    onRegister();
-    broadcastUpdate();
-
-    alert("User added successfully");
+    await onRegister();
+    setTimeout(() => broadcastUpdate(), 100);
   };
 
   return (

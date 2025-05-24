@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import db from "../db/pgliteClient";
 
 const SqlQueryBox = () => {
-  const [query, setQuery] = useState("select * from patients;");
+  const [query, setQuery] = useState("SELECT * FROM patients;");
   const [result, setResult] = useState([]);
 
   const runQuery = async () => {
@@ -11,41 +11,52 @@ const SqlQueryBox = () => {
       setResult(res.rows ?? []);
     } catch (err) {
       alert("Invalid SQL");
-      setResult([]); // reset result on failure
+      setResult([]); // Reset result on failure
     }
   };
 
   return (
     <div className="card p-3 mb-4">
-      <h4>Run SQL Querry</h4>
-      <textarea
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="form-control mb-2"
-      />
-      <button onClick={runQuery} className="btn btn-success mb-3">
+      <h4 className="mb-3">Run SQL Query</h4>
+      <div className="mb-3">
+        <textarea
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="form-control"
+          rows={4}
+        />
+      </div>
+      <button onClick={runQuery} className="btn btn-success mb-4">
         Execute
       </button>
-      {Array.isArray(result) && result.length > 0 && (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              {Object.keys(result[0]).map((col, i) => (
-                <th key={i}>{col}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.map((row, i) => (
-              <tr key={i}>
-                {Object.values(row).map((val, j) => (
-                  <td key={j}>{val}</td>
+
+      <div>
+        <h5 className="mb-3">Query Results</h5>
+        {Array.isArray(result) && result.length > 0 ? (
+          <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead className="table-light">
+                <tr>
+                  {Object.keys(result[0]).map((col, i) => (
+                    <th key={i}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {result.map((row, i) => (
+                  <tr key={i}>
+                    {Object.values(row).map((val, j) => (
+                      <td key={j}>{val}</td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-muted">No results to display</div>
+        )}
+      </div>
     </div>
   );
 };
